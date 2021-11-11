@@ -19,11 +19,7 @@ This is the course project for my [MERN eCommerce From Scratch](https://www.udem
 - Admin Order details page
 - Mark orders as delivered option
 - Checkout process (shipping, payment method, etc)
-- PayPal / credit card integration
 - Database seeder (products & users)
-
-## Note on Issues
-Please do not post issues here that are related to your own code when taking the course. Add those in the Udemy Q/A. If you clone THIS repo and there are issues, then you can submit
 
 ## Usage
 
@@ -104,8 +100,6 @@ jane@example.com (Customer)
 ## License
 
 The MIT License
-
-Copyright (c) 2020 Traversy Media https://traversymedia.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
