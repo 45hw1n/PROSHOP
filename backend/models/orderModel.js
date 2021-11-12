@@ -51,6 +51,11 @@ const orderSchema = mongoose.Schema(
       required: true,
       default: 0.0,
     },
+    curreny: {
+      type: String,
+      required: true,
+      default: "INR",
+    },
     isPaid: {
       type: Boolean,
       required: true,

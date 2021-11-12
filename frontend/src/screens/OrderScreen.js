@@ -6,14 +6,35 @@ import { Row, Col, ListGroup, Image, Card, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { getOrderDetails, payOrder, payOrderCod,deliverOrder } from '../actions/orderActions';
+import {
+  getOrderDetails,
+  payOrder,
+  payOrderCod,
+  deliverOrder,
+} from '../actions/orderActions';
 import {
   ORDER_PAY_RESET,
   ORDER_DELIVER_RESET,
-  ORDER_PAY_COD_RESET
+  ORDER_PAY_COD_RESET,
 } from '../constants/orderConstants';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+function loadScript(src) {
+  return new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      resolve(false);
+    };
+    document.body.appendChild(script);
+  });
+}
+
+const __DEV__ = document.domain === 'localhost';
 
 const OrderScreen = ({ match, history }) => {
   const orderId = match.params.id;
@@ -53,50 +74,71 @@ const OrderScreen = ({ match, history }) => {
       history.push('/login');
     }
 
-    const addPayPalScript = async () => {
-      const { data: clientId } = await axios.get('/api/config/paypal');
-      const script = document.createElement('script');
-      script.type = 'text/javascript';
-      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
-
-      script.async = true;
-      script.onload = () => {
-        setSdkReady(true);
-      };
-      document.body.appendChild(script);
-    };
-
-    if (!order || successPay || successPayCod || successDeliver || order._id !== orderId) {
-      dispatch({ type: ORDER_PAY_RESET });
+    if (
+      !order ||
+      // successPay ||
+      successPayCod ||
+      successDeliver ||
+      order._id !== orderId
+    ) {
+      // dispatch({ type: ORDER_PAY_RESET });
       dispatch({ type: ORDER_PAY_COD_RESET });
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch(getOrderDetails(orderId));
-    } else if (!order.isPaid) {
-      if (!window.paypal) {
-        addPayPalScript();
-      } else {
-        setSdkReady(true);
-      }
-    }
-  }, [dispatch, orderId, successPay, successPayCod , successDeliver, order]);
-
-  const successPaymentHandler = (paymentResult) => {
-    console.log(paymentResult);
-    dispatch(payOrder(orderId, paymentResult));
-  };
+    } 
+    // else if (!order.isPaid) {
+    //   if (!window.paypal) {
+    //     addPayPalScript();
+    //   } else {
+    //     setSdkReady(true);
+    //   }
+    // }
+  }, [dispatch, orderId, successPayCod, successDeliver, order]);
 
   const [cod, setCod] = useState(false);
-  
+
   const codHandler = () => {
     dispatch(payOrderCod(order));
     toast.success('Order Placed successfully!');
-    setCod(true);    
+    setCod(true);
   };
 
   const deliverHandler = () => {
     dispatch(deliverOrder(order));
   };
 
+  async function razorpayHandler() {
+    console.log('hello');
+
+    const res = await loadScript(
+      'https://checkout.razorpay.com/v1/checkout.js'
+    );
+
+    if (!res) {
+      alert('Razorpay SDK failed to load. Are you online?');
+      return;
+    }
+
+    // const info = axios.post(`/api/orders/${order._id}/payment`)
+
+    axios.post(`/api/orders/${order._id}/payment`).then((info) => {
+      console.log(info);
+      const options = {
+        key: __DEV__ ? 'rzp_test_LorPXrJRKdHWNF' : 'PRODUCTION_KEY',
+        // currency: order.currency,
+        // amount: order.totalPrice.toString(),
+        order_id: info.data.id,
+        name: 'PROSHOP',
+        handler: function (response) {
+          alert(response.razorpay_payment_id);
+          alert(response.razorpay_order_id);
+          alert(response.razorpay_signature);
+        },
+      };
+      const paymentObject = new window.Razorpay(options);
+      paymentObject.open();
+    });
+  }
 
   return loading ? (
     <Loader />
@@ -110,7 +152,7 @@ const OrderScreen = ({ match, history }) => {
           <ListGroup variant='flush'>
             <ListGroup.Item>
               <h2>Shipping</h2>
-              <h5 className="mb-3">ID:{order._id}</h5>
+              <h5 className='mb-3'>ID:{order._id}</h5>
               <p>
                 <strong>Name: </strong> {order.user.name}
               </p>
@@ -162,7 +204,7 @@ const OrderScreen = ({ match, history }) => {
                 <ListGroup variant='flush'>
                   {order.orderItems.map((item, index) => (
                     <ListGroup.Item key={index}>
-                      <Row className="align-items-center">
+                      <Row className='align-items-center'>
                         <Col md={3}>
                           <Image
                             src={item.image}
@@ -218,19 +260,19 @@ const OrderScreen = ({ match, history }) => {
                   <Col>Rs.{order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
-              {!order.isPaid && order.paymentMethod === 'Cash On Delivery' ? (
+              {!order.isPaid && order.paymentMethod === 'Cash On Delivery' && (
                 <>
                   {' '}
                   {cod === false && !order.isPaid ? (
                     <>
-                    {loadingPayCod && <Loader />}
-                    <Button
-                      type='button'
-                      className='btn btn-block'
-                      onClick={codHandler}
-                    >
-                      Confirm Order
-                    </Button>
+                      {loadingPayCod && <Loader />}
+                      <Button
+                        type='button'
+                        className='btn btn-block'
+                        onClick={codHandler}
+                      >
+                        Confirm Order (POD)
+                      </Button>
                     </>
                   ) : (
                     <ToastContainer
@@ -246,10 +288,23 @@ const OrderScreen = ({ match, history }) => {
                     />
                   )}
                 </>
-              ) : (
+              )}
+
+              {!order.isPaid && order.paymentMethod === 'PayPal' && (
                 <>
-                  {' '}
-                  {userInfo &&
+                  <Button
+                    type='button'
+                    className='btn btn-block'
+                    onClick={razorpayHandler}
+                  >
+                    RAZORPAY
+                  </Button>
+                </>
+              )}
+
+              <>
+                {' '}
+                {userInfo &&
                 userInfo.isAdmin &&
                 order.isPaid &&
                 !order.isDelivered ? (
@@ -263,8 +318,7 @@ const OrderScreen = ({ match, history }) => {
                     </Button>
                   </ListGroup.Item>
                 ) : null}
-                </>
-              )}
+              </>
             </ListGroup>
           </Card>
         </Col>
