@@ -57,6 +57,8 @@ app.get('/razorpay', (req, res) => {
   res.send('working...');
 });
 
+
+
 // app.post('/verification', (req, res) => {
 //   // do a validation
 //   const secret = '12345678';

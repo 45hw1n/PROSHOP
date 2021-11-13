@@ -76,16 +76,16 @@ const OrderScreen = ({ match, history }) => {
 
     if (
       !order ||
-      // successPay ||
+      successPay ||
       successPayCod ||
       successDeliver ||
       order._id !== orderId
     ) {
-      // dispatch({ type: ORDER_PAY_RESET });
+      dispatch({ type: ORDER_PAY_RESET });
       dispatch({ type: ORDER_PAY_COD_RESET });
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch(getOrderDetails(orderId));
-    } 
+    }
     // else if (!order.isPaid) {
     //   if (!window.paypal) {
     //     addPayPalScript();
@@ -93,9 +93,11 @@ const OrderScreen = ({ match, history }) => {
     //     setSdkReady(true);
     //   }
     // }
-  }, [dispatch, orderId, successPayCod, successDeliver, order]);
+  }, [dispatch, orderId, successPay, successPayCod, successDeliver, order]);
 
   const [cod, setCod] = useState(false);
+
+  const [successRazor, setSuccessRazor] = useState(false);
 
   const codHandler = () => {
     dispatch(payOrderCod(order));
@@ -129,10 +131,23 @@ const OrderScreen = ({ match, history }) => {
         // amount: order.totalPrice.toString(),
         order_id: info.data.id,
         name: 'PROSHOP',
+        callback_url: '/verify-order',
+        prefill: {
+          name: 'Gaurav Kumar',
+          email: 'gaurav.kumar@example.com',
+          contact: '9999999999',
+        },
+        // handler: function (response) {
+        //   alert(response.razorpay_payment_id);
+        //   alert(response.razorpay_order_id);
+        //   alert(response.razorpay_signature);
+        // },
         handler: function (response) {
-          alert(response.razorpay_payment_id);
-          alert(response.razorpay_order_id);
-          alert(response.razorpay_signature);
+          console.log(response);
+          // alert('This step of Payment Succeeded');
+          setSuccessRazor(true);
+          toast.success('Order Placed successfully!');
+          dispatch(payOrder(orderId));
         },
       };
       const paymentObject = new window.Razorpay(options);
@@ -290,7 +305,10 @@ const OrderScreen = ({ match, history }) => {
                 </>
               )}
 
-              {!order.isPaid && order.paymentMethod === 'PayPal' && (
+              {
+              !order.isPaid &&
+              order.paymentMethod === 'PayPal' &&
+              !successRazor ? (
                 <>
                   <Button
                     type='button'
@@ -299,6 +317,20 @@ const OrderScreen = ({ match, history }) => {
                   >
                     RAZORPAY
                   </Button>
+                </>
+              ) : (
+                <>
+                  <ToastContainer
+                    position='top-right'
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                  />
                 </>
               )}
 

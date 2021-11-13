@@ -145,10 +145,7 @@ const PlaceOrderScreen = ({ history }) => {
                   <Col>Rs.{cart.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
-              <ListGroup.Item>
                 {error && <Message variant='danger'>{error}</Message>}
-              </ListGroup.Item>
-              <ListGroup.Item>
                 <Button
                   type='button'
                   className='btn-block'
@@ -157,7 +154,6 @@ const PlaceOrderScreen = ({ history }) => {
                 >
                   Place Order
                 </Button>
-              </ListGroup.Item>
             </ListGroup>
           </Card>
         </Col>

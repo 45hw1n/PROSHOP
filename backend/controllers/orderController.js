@@ -62,18 +62,16 @@ const getOrderById = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update order to paid
-// @route   GET /api/orders/:id/pay
+// @route   GET /api/orders/:id/payment
 // @access  Private
-const updateOrderToPaid = asyncHandler(async (req, res) => {
+const updateOrderToPaidRp = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
   if (order) {
     order.isPaid = true;
     order.paidAt = Date.now();
     order.paymentResult = {
-      id: req.body.id,
-      status: req.body.status,
-      update_time: req.body.update_time,
-      email_address: req.body.payer.email_address,
+      payment_Id: req.body.razorpay_payment_id,
+      order_Id: req.body.razorpay_order_id,
     };
 
     const updatedOrder = await order.save();
@@ -145,10 +143,10 @@ const payment = asyncHandler(async (req, res) => {
       currency,
       receipt: uuidv4(),
       payment_capture
-    };
+    }
     try {
       const response = await razorpay.orders.create(options)
-      console.log(response)
+      console.log("response = " , response)
       res.json({
         id: response.id,
         currency: response.currency,
@@ -167,13 +165,25 @@ const payment = asyncHandler(async (req, res) => {
   }
 });
 
+// const checkPayment = asyncHandler(async (req, res) => {
+//   // razorpay.payments.fetch(req.body.razorpay_payment_id).then((paymentDocument) => {
+//   //   // console.log(paymentDocument)
+//   //   if(paymentDocument.status === "captured") {
+//   //     res.send("payment successful")
+//   //   }else {
+//   //     res.send("payment unsuccessful")
+//   //   }
+//   // })
+// }) ;
+
 export {
   addOrderItems,
   getOrderById,
-  updateOrderToPaid,
+  updateOrderToPaidRp,
   updateOrderToPaidCOD,
   updateOrderToDelivered,
   getMyOrders,
   getOrders,
   payment,
+  // checkPayments
 };
