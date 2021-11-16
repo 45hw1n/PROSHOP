@@ -131,16 +131,12 @@ const OrderScreen = ({ match, history }) => {
         order_id: info.data.id,
         name: 'PROSHOP',
         callback_url: '/verify-order',
-        prefill: {
-          name: 'Gaurav Kumar',
-          email: 'gaurav.kumar@example.com',
-          contact: '9999999999',
-        },
-        // handler: function (response) {
-        //   alert(response.razorpay_payment_id);
-        //   alert(response.razorpay_order_id);
-        //   alert(response.razorpay_signature);
+        // prefill: {
+        //   name: 'Gaurav Kumar',
+        //   email: 'gaurav.kumar@example.com',
+        //   contact: '9999999999',
         // },
+
         handler: function (paymentResult) {
           console.log("paymentResult = ",paymentResult);
           setSuccessRazor(true);
