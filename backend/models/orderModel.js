@@ -33,6 +33,7 @@ const orderSchema = mongoose.Schema(
     paymentResult: {
       payment_Id: { type: String },
       order_Id: { type: String },
+      razorpay_signature: { type: String }
     },
     taxPrice: {
       type: Number,

@@ -110,7 +110,6 @@ const OrderScreen = ({ match, history }) => {
   };
 
   async function razorpayHandler() {
-    console.log('hello');
 
     const res = await loadScript(
       'https://checkout.razorpay.com/v1/checkout.js'
@@ -124,7 +123,7 @@ const OrderScreen = ({ match, history }) => {
     // const info = axios.post(`/api/orders/${order._id}/payment`)
 
     axios.post(`/api/orders/${order._id}/payment`).then((info) => {
-      console.log(info);
+      console.log("info = ",info);
       const options = {
         key: __DEV__ ? 'rzp_test_LorPXrJRKdHWNF' : 'PRODUCTION_KEY',
         // currency: order.currency,
@@ -142,12 +141,11 @@ const OrderScreen = ({ match, history }) => {
         //   alert(response.razorpay_order_id);
         //   alert(response.razorpay_signature);
         // },
-        handler: function (response) {
-          console.log(response);
-          // alert('This step of Payment Succeeded');
+        handler: function (paymentResult) {
+          console.log("paymentResult = ",paymentResult);
           setSuccessRazor(true);
           toast.success('Order Placed successfully!');
-          dispatch(payOrder(orderId));
+          dispatch(payOrder(orderId, paymentResult));
         },
       };
       const paymentObject = new window.Razorpay(options);

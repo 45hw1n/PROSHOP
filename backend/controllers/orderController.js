@@ -72,6 +72,7 @@ const updateOrderToPaidRp = asyncHandler(async (req, res) => {
     order.paymentResult = {
       payment_Id: req.body.razorpay_payment_id,
       order_Id: req.body.razorpay_order_id,
+      razorpay_signature: razorpay_signature
     };
 
     const updatedOrder = await order.save();
