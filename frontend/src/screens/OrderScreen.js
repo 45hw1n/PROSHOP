@@ -115,7 +115,7 @@ const OrderScreen = ({ match, history }) => {
     axios.post(`/api/orders/${order._id}/payment`).then((info) => {
       console.log("info = ",info);
       const options = {
-        key: __DEV__ ? 'rzp_test_LorPXrJRKdHWNF' : 'PRODUCTION_KEY',
+        key: 'rzp_test_LorPXrJRKdHWNF',
         order_id: info.data.id,
         name: 'PROSHOP',
         handler: function (paymentResult) {
