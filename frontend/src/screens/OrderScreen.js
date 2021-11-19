@@ -292,6 +292,7 @@ const OrderScreen = ({ match, history }) => {
                   >
                     RAZORPAY
                   </Button>
+
                 </>
               ) : (
                 <>
@@ -327,7 +328,17 @@ const OrderScreen = ({ match, history }) => {
                 ) : null}
               </>
             </ListGroup>
+           
           </Card>
+          {
+              !order.isPaid &&
+              order.paymentMethod === 'PayPal' &&
+              !successRazor && (
+                <>
+                  <p className="mt-4">Use card-number : 4111 1111 1111 1111 <br/> any CVV and expiry date</p>
+                </>
+              )
+            }
         </Col>
       </Row>
     </>
