@@ -79,7 +79,7 @@ const PlaceOrderScreen = ({ history }) => {
             <ListGroup.Item>
               <h2>Payment Method</h2>
               <strong>Method: </strong>
-              {cart.paymentMethod}
+              {cart.paymentMethod ==="PayPal" ? "Online Payment" : cart.paymentMethod }
             </ListGroup.Item>
 
             <ListGroup.Item>
