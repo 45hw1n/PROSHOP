@@ -59,7 +59,6 @@ const OrderScreen = ({ match, history }) => {
   const { userInfo } = userLogin;
 
   if (!loading) {
-    //   Calculate prices
     const addDecimals = (num) => {
       return (Math.round(num * 100) / 100).toFixed(2);
     };
@@ -86,13 +85,6 @@ const OrderScreen = ({ match, history }) => {
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch(getOrderDetails(orderId));
     }
-    // else if (!order.isPaid) {
-    //   if (!window.paypal) {
-    //     addPayPalScript();
-    //   } else {
-    //     setSdkReady(true);
-    //   }
-    // }
   }, [dispatch, orderId, successPay, successPayCod, successDeliver, order]);
 
   const [cod, setCod] = useState(false);
@@ -120,14 +112,10 @@ const OrderScreen = ({ match, history }) => {
       return;
     }
 
-    // const info = axios.post(`/api/orders/${order._id}/payment`)
-
     axios.post(`/api/orders/${order._id}/payment`).then((info) => {
       console.log("info = ",info);
       const options = {
         key: __DEV__ ? 'rzp_test_LorPXrJRKdHWNF' : 'PRODUCTION_KEY',
-        // currency: order.currency,
-        // amount: order.totalPrice.toString(),
         order_id: info.data.id,
         name: 'PROSHOP',
         callback_url: '/verify-order',
@@ -136,11 +124,6 @@ const OrderScreen = ({ match, history }) => {
           email: 'gaurav.kumar@example.com',
           contact: '9999999999',
         },
-        // handler: function (response) {
-        //   alert(response.razorpay_payment_id);
-        //   alert(response.razorpay_order_id);
-        //   alert(response.razorpay_signature);
-        // },
         handler: function (paymentResult) {
           console.log("paymentResult = ",paymentResult);
           setSuccessRazor(true);

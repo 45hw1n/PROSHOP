@@ -171,7 +171,7 @@ export const payOrderCod = (order) => async (
     }
 
     const { data } = await axios.put(
-      `/api/orders/${order._id}/cod`,
+      `/api/orders/${order._id}/payment`,
       {},
     )
 

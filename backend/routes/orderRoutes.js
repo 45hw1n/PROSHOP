@@ -18,7 +18,7 @@ router.route('/myorders').get(protect, getMyOrders)
 router.route('/:id').get(protect, getOrderById)
 router.route('/:id/payment').post(payment)
 router.route('/:id/payment').put(updateOrderToPaidRp)
-router.route('/:id/cod').put(protect, updateOrderToPaidCOD)
+router.route('/:id/payment').put(protect, updateOrderToPaidCOD)
 router.route('/:id/deliver').put(protect, admin, updateOrderToDelivered)
 
 export default router
