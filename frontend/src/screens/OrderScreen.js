@@ -118,12 +118,6 @@ const OrderScreen = ({ match, history }) => {
         key: __DEV__ ? 'rzp_test_LorPXrJRKdHWNF' : 'PRODUCTION_KEY',
         order_id: info.data.id,
         name: 'PROSHOP',
-        callback_url: '/verify-order',
-        prefill: {
-          name: 'Gaurav Kumar',
-          email: 'gaurav.kumar@example.com',
-          contact: '9999999999',
-        },
         handler: function (paymentResult) {
           console.log("paymentResult = ",paymentResult);
           setSuccessRazor(true);
